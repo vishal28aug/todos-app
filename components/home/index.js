@@ -72,7 +72,7 @@ export default class Home extends Component {
     return (this.completedTask.map((task, index) =>
       <View key={index} style={this.styles.accordion}>
         <CheckBox checked={true} onPress={() => this.removeCompletedTask(task, index)} />
-        <Text style={{ left: 30 }}>{task.taskName}</Text>
+        <Text style={{ left: 30,textDecorationLine: 'line-through' }}>{task.taskName}</Text>
       </View>
     ))
   }
@@ -139,12 +139,6 @@ export default class Home extends Component {
       paddingBottom: 20,
       marginLeft: 20,
     },
-    listName: {
-      fontSize: 40,
-      fontWeight: 'bold',
-      paddingBottom: 20,
-      marginLeft: 20,
-    },
     task: {
       fontSize: 20,
       paddingBottom: 20,
@@ -161,7 +155,7 @@ export default class Home extends Component {
       borderBottomColor: '#d6d6c2',
       borderBottomWidth: 0.18,
       flexDirection: 'row',
-      padding: 10
+      padding: 10,
     }
 
   })
