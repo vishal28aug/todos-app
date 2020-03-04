@@ -21,28 +21,31 @@ export default class AppFooter extends Component {
     this.props.navigation.navigate('AddList', { addList: this.props.addList })
   }
   render() {
-    let buttons = [...this.props.state.list, "+ Create new list"];
     return (
-      <View>
-        <Footer >
-          <FooterTab>
+      <View >
+        <Footer>
+          <FooterTab  style={{
+          justifyContent: 'center',
+          backgroundColor:'#3f12e3',      
+          
+        }}>
             <Left>
-              <Root>
-                <Button
+                <Button transparent 
                   onPress={() => this.RBSheet.open()}
                 >
-                  <Icon name='menu' />
+                  <Icon style={{ color: 'white' }} name='menu' />
                 </Button>
-              </Root>
             </Left>
 
-            <Button onPress={() => this.props.setAddTask(!this.props.state.isShowAddTask)} style={this.styles.centerButton} >
-              <Icon active name="add" style={{ color: 'darkgrey' }} />
+            <Button 
+            style={this.styles.circleCutOut}
+            onPress={() => this.props.setAddTask(!this.props.state.isShowAddTask)}>
+            <Icon active name="add" style={{ color: 'white', fontSize:40 }} />
             </Button>
 
             <Right>
-              <Button >
-                <Icon name='more' />
+              <Button transparent>
+                <Icon style={{ color: 'white' }} name='more' />
               </Button>
             </Right>
           </FooterTab>
@@ -134,7 +137,21 @@ export default class AppFooter extends Component {
     },
     actionSheetFooter:{
       justifyContent: "center",
-              alignItems: "center"
+      alignItems: "center"
+    },
+    circleCutOut:{
+      backgroundColor: '#3f12e3',
+      height: 80,
+      width: 80,
+      alignSelf: 'center',
+      borderRadius: 40,
+      borderColor: 'white',
+      borderWidth: 10,
+      position: 'absolute',
+      top: -40,
+      zIndex: 1,
+      alignItems:"center",
+      justifyContent:"center",
     }
   });
 }

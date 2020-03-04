@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import {BackHandler,Keyboard } from 'react-native'
 import { Container, Header, Content, ListItem, Text, Radio, Right, Left, Accordion, CheckBox, Body } from 'native-base';
 import AppFooter from './../footer'
 import AddTask from './../add-task'
@@ -12,6 +13,9 @@ dataArray = [
 ];
 
 export default class Home extends Component {
+  backHandler;
+  keyboardDidHideListener;
+
   constructor(props) {
     super(props)
     this.state = {
@@ -89,6 +93,22 @@ export default class Home extends Component {
     this.setState({selectedList})
   }
 
+  componentDidMount() {
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      this.setAddTask(false); 
+      return true;
+    });
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',() =>{
+      //this.setAddTask(false)
+      });
+  }
+
+  componentWillUnmount() {
+    this.backHandler.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
   render() {
     if(this.props.route?.params?.listName != ''){
       let list = this.state.list.concat(this.props.route?.params?.listName);
@@ -100,7 +120,8 @@ export default class Home extends Component {
       <View
         style={{
           flexDirection: 'column',
-          flex: 1
+          flex: 1,
+          backgroundColor: 'white'
         }}>
 
         <Text style={this.styles.selectedListName}>{this.state.selectedList}</Text>
@@ -121,13 +142,13 @@ export default class Home extends Component {
             <TouchableWithoutFeedback onPress={() => this.setAddTask(false)}>
               <AddTask state={this.state} addTask={this.addTask} setAddTask={this.setAddTask} />
             </TouchableWithoutFeedback>
-            : null
+            :  <AppFooter 
+            navigation= {this.props.navigation} 
+            state={this.state} 
+            setAddTask={this.setAddTask} 
+            changeSelectedItem={this.changeSelectedItem}/>
         }
-        <AppFooter 
-        navigation= {this.props.navigation} 
-        state={this.state} 
-        setAddTask={this.setAddTask} 
-        changeSelectedItem={this.changeSelectedItem}/>
+       
       </View>
     )
   }
