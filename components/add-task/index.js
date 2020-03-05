@@ -3,6 +3,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Card, CardItem, Text, Body, Item, Input, DatePicker } from 'native-base';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Calendar from './../calendar'
 
 export default class AddTask extends Component {
 
@@ -12,8 +13,8 @@ export default class AddTask extends Component {
       taskName: '',
       showAddDesc: false,
       taskDesc: '',
-      taskDate: new Date(),
-      mode:'date'
+      taskDate: null,
+      showCalendar: false
     }
   }
 
@@ -23,78 +24,79 @@ export default class AddTask extends Component {
     this.setState({ taskName: '', taskDesc: '' });
   }
 
+  getTaskDate = (date) => {
+    console.log(new Date(date.nativeEvent.timestamp))
+    //date= date.toString().split(' ').slice(0, 4).join(' ');
+    this.setState({ taskDate: new Date(date.nativeEvent.timestamp), showCalendar: false });
 
+  }
 
   render() {
     return (
       <View>
-      <Card >
-        <CardItem >
-          <Body>
-            <Item>
-              <Input value={this.state.taskName}
-                onChangeText={(value) => this.setState({ taskName: value })}
-                placeholder="New task"
-                autoFocus={true} />
-            </Item>
-            {this.state.showAddDesc ?
+        <Card >
+          <CardItem >
+            <Body>
+
               <Item>
-                <Input value={this.state.taskDesc}
-                  onChangeText={(value) => this.setState({ taskDesc: value })}
-                  placeholder="Add details"
-                />
-              </Item> : null}
-              {/* <Item>
-                <Text>{this.state.taskDate}</Text>
-                </Item> */}
-          </Body>
-        </CardItem>
+                <Input value={this.state.taskName}
+                  onChangeText={(value) => this.setState({ taskName: value })}
+                  placeholder="New task"
+                  autoFocus={true} />
+              </Item>
 
-        <CardItem footer>
+              {
+                this.state.showAddDesc &&
+                <Item>
+                  <Input value={this.state.taskDesc}
+                    onChangeText={(value) => this.setState({ taskDesc: value })}
+                    placeholder="Add details"
+                  />
+                </Item>
+              }
 
-          <FontAwesome
-            style={this.state.showAddDesc ? this.styles.descriptionIcon : this.styles.icons}
-            name='align-left'
-            onPress={() => !this.state.showAddDesc ? this.setState({ showAddDesc: true }) : null} />
+              {
+                this.state.taskDate && <Item>
+                  <Card style={this.styles.date}>
+                    <CardItem style={{ flexDirection: 'row', flex: 1, alignContent: 'center', alignItems: 'center' }}>
+                      <FontAwesome style={[this.styles.icons, { left: -25 }]} name='calendar-check-o' />
+                      <Text style={{ left: -15 }}>{this.state.taskDate.toString().split(' ').slice(0, 4).join(' ')}</Text>
+                      <FontAwesome style={{ fontSize: 20, fontWeight: 100 }} onPress={() => this.setState({ taskDate: null })} name='close' />
+                    </CardItem>
+                  </Card>
+                </Item>
+              }
 
-          <FontAwesome 
-          style={this.styles.icons} 
-          name='calendar-check-o' 
-          onPress={() => !this.state.showChooseDate ? this.setState({ showChooseDate: true }) : null} />
+            </Body>
+          </CardItem>
 
-          <Text
-            style={this.styles.saveButton}
-            onPress={() => this.handleOnPressSaveTask()}>Save</Text>
-        </CardItem>
-      </Card>
-      {this.state.showChooseDate ? this.openDatePicker(): null}
+          <CardItem footer>
+            <FontAwesome
+              style={this.state.showAddDesc ? this.styles.descriptionIcon : this.styles.icons}
+              name='align-left'
+              onPress={() => this.setState({ showAddDesc: true })} />
+
+            <FontAwesome
+              style={this.styles.icons}
+              name='calendar-check-o'
+              onPress={() => this.setState({ showCalendar: true })} />
+
+            <Text
+              style={this.styles.saveButton}
+              onPress={() => this.handleOnPressSaveTask()}>Save</Text>
+          </CardItem>
+
+        </Card>
+        {
+          this.state.showCalendar ? <Calendar state={this.state} getTaskDate={this.getTaskDate} /> : null
+        }
       </View>
     )
   }
 
-  onChange = (event, selectedDate) =>{
-    const currentDate = selectedDate || this.state.date;
-    this.state.setState({taskDate:currentDate});
-
-  }
-  openDatePicker = () => {
-    return (
-      <DateTimePicker
-      testID="dateTimePicker"
-      timeZoneOffsetInMinutes={0}
-      value={this.state.taskDate}
-
-      is24Hour={true}
-      display="default"
-      onChange={()=>this.onChange}/>
-    )
-  }
-
- 
-
   styles = StyleSheet.create({
     saveButton: {
-      color: 'blue',
+      color: '#007bff',
       position: 'absolute',
       right: 20,
       fontSize: 20,
@@ -104,12 +106,16 @@ export default class AddTask extends Component {
     icons: {
       fontSize: 20,
       marginLeft: 20,
-      color: 'blue'
+      color: '#007bff'
     },
     descriptionIcon: {
       color: 'grey',
       fontSize: 20,
       marginLeft: 20
+    },
+    date: {
+      height: 40,
+      width: 210
     }
 
   });
