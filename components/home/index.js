@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import {BackHandler,Keyboard } from 'react-native'
-import { Container, Header, Content, ListItem, Text, Radio, Right, Left, Accordion, CheckBox, Body } from 'native-base';
+import { BackHandler, Keyboard, TouchableWithoutFeedback, View, StyleSheet, YellowBox } from 'react-native'
+import { Content, ListItem, Text, Radio, Card, CardItem, Accordion, CheckBox } from 'native-base';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 import AppFooter from './../footer'
 import AddTask from './../add-task'
 
-import { TouchableWithoutFeedback, View, StyleSheet,YellowBox  } from 'react-native'
 
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
 
@@ -19,21 +20,21 @@ export default class Home extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      listName :this.props.route?.params.listName,
+      listName: this.props.route?.params.listName,
       isShowAddTask: false,
       selectedList: 'Buy',
       list: ['Buy', 'Sell'],
       tasks: [{
         taskName: 'bike',
-        taskDetail: 'hey i want R1',
-        taskDate: '',
+        taskDetail: 'null',
+        taskDate: null,
         taskList: 'Buy',
         status: 'pending'
       },
       {
         taskName: 'icecream',
-        taskDetail: 'hey i want icecream',
-        taskDate: '',
+        taskDetail: 'lovesdf sd fs dfsd fd fssd fsdg sdf sadf sd gsdf sdg sdg sdf sdg sdg sdh sfh sd sd',
+        taskDate: new Date(),
         taskList: 'Buy',
         status: 'completed'
       }]
@@ -48,7 +49,7 @@ export default class Home extends Component {
   }
 
   addTask = (task) => {
-    let newTask = { taskName: task.taskName, taskDetail: task.taskDesc, taskDate: '', taskList: this.state.selectedList, status: 'pending' };
+    let newTask = { taskName: task.taskName, taskDetail: task.taskDesc, taskDate: task.taskDate, taskList: this.state.selectedList, status: 'pending' };
     let tasks = this.state.tasks.concat(newTask);
     this.setState({ tasks })
   }
@@ -61,7 +62,7 @@ export default class Home extends Component {
 
   //Storing completed task list
   getCompletedTask = (item) => {
-    if (!this.completedTask.find(x => x.taskName === item.taskName ) && item.taskList == this.state.selectedList)
+    if (!this.completedTask.find(x => x.taskName === item.taskName) && item.taskList == this.state.selectedList)
       this.completedTask.push(item);
   }
 
@@ -76,7 +77,7 @@ export default class Home extends Component {
     return (this.completedTask.map((task, index) =>
       <View key={index} style={this.styles.accordion}>
         <CheckBox checked={true} onPress={() => this.removeCompletedTask(task, index)} />
-        <Text style={{ left: 30,textDecorationLine: 'line-through' }}>{task.taskName}</Text>
+        <Text style={{ left: 30, textDecorationLine: 'line-through' }}>{task.taskName}</Text>
       </View>
     ))
   }
@@ -88,19 +89,19 @@ export default class Home extends Component {
     )
   }
 
-  changeSelectedItem = (selectedList) =>{
+  changeSelectedItem = (selectedList) => {
     this.completedTask = [];
-    this.setState({selectedList})
+    this.setState({ selectedList })
   }
 
   componentDidMount() {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      this.setAddTask(false); 
+      this.setAddTask(false);
       return true;
     });
     this.keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',() =>{
-      //this.setAddTask(false)
+      'keyboardDidHide', () => {
+        //this.setAddTask(false)
       });
   }
 
@@ -108,13 +109,15 @@ export default class Home extends Component {
     this.backHandler.remove();
     this.keyboardDidHideListener.remove();
   }
+  openTask = () =>{
+    console.log('task opened')
+  }
 
   render() {
-    if(this.props.route?.params?.listName != ''){
+    if (this.props.route?.params?.listName != '') {
       let list = this.state.list.concat(this.props.route?.params?.listName);
-      console.log(list)
-      this.setState({selectedList:this.props.route?.params?.listName, list});
-      this.props.navigation.setParams({listName: ''});
+      if (list) this.setState({ selectedList: this.props.route?.params?.listName, list });
+      this.props.navigation.setParams({ listName: '' });
     }
     return (
       <View
@@ -123,32 +126,46 @@ export default class Home extends Component {
           flex: 1,
           backgroundColor: 'white'
         }}>
-
         <Text style={this.styles.selectedListName}>{this.state.selectedList}</Text>
         <Content>
-          {this.state.tasks.filter(x => x.taskList === this.state.selectedList).map((task, index) =>
-            task.status == "pending" ?
-              <ListItem style={this.styles.task} key={index}>
-                <Radio selected={false} onPress={() => this.changeTaskStatus(task, 'completed')} />
-                <Text numberOfLines={1} style={this.styles.taskName}>{task.taskName }</Text>
-                <Text numberOfLines={1} style={this.styles.taslDetail}>{task.taskDetail}</Text>
-               
-              </ListItem> : this.getCompletedTask(task)
-          )}
+          {
+            this.state.tasks.filter(x => x.taskList === this.state.selectedList).map((task, index) =>
+              task.status == "pending" ?
+                <ListItem style={this.styles.task} key={index} onPress = {() =>this.openTask()}>
+                  <Radio selected={false} onPress={() => this.changeTaskStatus(task, 'completed')} />
+                  <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <View><Text style={this.styles.taskName}>{task.taskName}</Text></View>
+                    <View>{task.taskDetail && <Text style={this.styles.taslDetail}>{task.taskDetail}</Text>}</View>
+                    <View>
+                      {
+                        task.taskDate && <Card style={this.styles.date}>
+                          <CardItem style={{ flexDirection: 'row', flex: 1, alignContent: 'center', alignItems: 'center' }}>
+                            <FontAwesome style={{ color: '#007bff', fontSize: 17 }} name='calendar-check-o' />
+                            <Text style={{ right: -5, color: '#A0A0A0' }}>{task.taskDate.toString().split(' ').slice(0, 3).join(' ')}</Text>
+                          </CardItem>
+                        </Card>
+                      }
+                    </View>
+                  </View>
+
+                </ListItem> : this.getCompletedTask(task)
+            )}
+
           {this.showCompletedTask()}
+
         </Content>
         {
           this.state.isShowAddTask ?
             <TouchableWithoutFeedback onPress={() => this.setAddTask(false)}>
               <AddTask state={this.state} addTask={this.addTask} setAddTask={this.setAddTask} />
             </TouchableWithoutFeedback>
-            :  <AppFooter 
-            navigation= {this.props.navigation} 
-            state={this.state} 
-            setAddTask={this.setAddTask} 
-            changeSelectedItem={this.changeSelectedItem}/>
+            : <AppFooter
+              navigation={this.props.navigation}
+              state={this.state}
+              setAddTask={this.setAddTask}
+              changeSelectedItem={this.changeSelectedItem} />
         }
-       
+
       </View>
     )
   }
@@ -165,18 +182,23 @@ export default class Home extends Component {
       paddingBottom: 20,
     },
     taskName: {
-      marginLeft: 20,
+      marginLeft: 20, flexWrap: 'wrap'
 
     },
-    taslDetail:{
-      marginLeft:20,
-      fontSize:12
+    taslDetail: {
+      marginLeft: 20,
+      fontSize: 12, flexWrap: 'wrap'
     },
     accordion: {
       borderBottomColor: '#d6d6c2',
       borderBottomWidth: 0.18,
       flexDirection: 'row',
       padding: 10,
+    },
+    date: {
+      height: 40,
+      width: 130,
+      marginLeft: 10,
     }
 
   })

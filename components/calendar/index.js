@@ -21,7 +21,7 @@ export default class Calendar extends Component {
           <DateTimePicker
             testID="dateTimePicker"
             timeZoneOffsetInMinutes={0}
-            value={this.state.selectedDate}
+            value={this.state.selectedDate || new Date()}
             mode={this.state.mode}
             is24Hour={true}
             display="default"

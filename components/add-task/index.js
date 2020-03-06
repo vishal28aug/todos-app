@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Card, CardItem, Text, Body, Item, Input, DatePicker } from 'native-base';
-import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { Card, CardItem, Text, Body, Item, Input } from 'native-base';
+import { StyleSheet, View } from 'react-native'
 import Calendar from './../calendar'
 
 export default class AddTask extends Component {
@@ -10,9 +9,9 @@ export default class AddTask extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      taskName: '',
+      taskName: null,
       showAddDesc: false,
-      taskDesc: '',
+      taskDesc: null,
       taskDate: null,
       showCalendar: false
     }
@@ -21,14 +20,11 @@ export default class AddTask extends Component {
   handleOnPressSaveTask = () => {
     this.props.addTask(this.state);
     this.props.setAddTask(false);
-    this.setState({ taskName: '', taskDesc: '' });
+    this.setState({ taskName: null, taskDesc: null });
   }
 
   getTaskDate = (date) => {
-    console.log(new Date(date.nativeEvent.timestamp))
-    //date= date.toString().split(' ').slice(0, 4).join(' ');
-    this.setState({ taskDate: new Date(date.nativeEvent.timestamp), showCalendar: false });
-
+   if(date?.nativeEvent?.timestamp) this.setState({ taskDate: new Date(date.nativeEvent.timestamp), showCalendar: false });
   }
 
   render() {

@@ -26,7 +26,7 @@ export default class AppFooter extends Component {
         <Footer>
           <FooterTab  style={{
           justifyContent: 'center',
-          backgroundColor:'#3f12e3',      
+          backgroundColor:'#007bff',      
           
         }}>
             <Left>
@@ -140,7 +140,7 @@ export default class AppFooter extends Component {
       alignItems: "center"
     },
     circleCutOut:{
-      backgroundColor: '#3f12e3',
+      backgroundColor: '#007bff',
       height: 80,
       width: 80,
       alignSelf: 'center',
